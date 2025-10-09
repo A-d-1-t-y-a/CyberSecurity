@@ -1,0 +1,223 @@
+# Memory Forensics Framework - Git Ignore Rules
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# Memory dumps (security)
+*.dmp
+*.raw
+*.vmem
+*.mem
+*.dump
+*.hiberfil.sys
+*.pagefile.sys
+*.swapfile
+
+# Analysis results (may contain sensitive data)
+results/
+output/
+analysis_results/
+*.json
+!configs/*.json
+!requirements.json
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Test artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# Documentation build
+docs/_build/
+docs/build/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# PEP 582
+__pypackages__/
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# Security
+*.key
+*.pem
+*.crt
+*.p12
+*.pfx
+
+# Cloud credentials
+.aws/
+.azure/
+.gcp/
+credentials.json
+service-account.json
+
+# Large files
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# Project specific
+data/sample_dumps/
+data/real_dumps/
+data/malware_samples/
+week*/data/
+week*/logs/
+week*/results/
+
+# Configuration files with sensitive data
+configs/production.json
+configs/secrets.json
+*.env.local
+*.env.production
+
+# IDE specific
+.vscode/settings.json
+.vscode/launch.json
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/dictionaries
+.idea/shelf
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
