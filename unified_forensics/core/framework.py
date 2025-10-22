@@ -79,8 +79,16 @@ class UnifiedForensicsFramework:
         
         for plugin_name in plugins:
             try:
-                plugin_module = __import__(f'unified_forensics.plugins.{plugin_name}', fromlist=[''])
-                plugin_class = getattr(plugin_module, f'{plugin_name.title()}Plugin')
+                if plugin_name == 'malware':
+                    plugin_module = __import__('unified_forensics.plugins.malware_detector', fromlist=[''])
+                    plugin_class = getattr(plugin_module, 'MalwareDetectorPlugin')
+                elif plugin_name == 'network':
+                    plugin_module = __import__('unified_forensics.plugins.network_analyzer', fromlist=[''])
+                    plugin_class = getattr(plugin_module, 'NetworkAnalyzerPlugin')
+                else:
+                    plugin_module = __import__(f'unified_forensics.plugins.{plugin_name}', fromlist=[''])
+                    plugin_class = getattr(plugin_module, f'{plugin_name.title().replace("_", "")}Plugin')
+                
                 plugin_instance = plugin_class()
                 plugin_results[plugin_name] = plugin_instance.analyze(results)
             except Exception as e:

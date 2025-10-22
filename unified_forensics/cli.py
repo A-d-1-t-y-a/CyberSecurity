@@ -44,10 +44,16 @@ def analyze(memory_dump, os, output, plugins, output_format):
         if plugins:
             click.echo(f"{Fore.YELLOW}Plugins: {', '.join(plugins)}")
         
+        plugin_list = []
+        if plugins:
+            for plugin in plugins:
+                plugin_list.extend(plugin.split(','))
+            plugin_list = [p.strip() for p in plugin_list if p.strip()]
+        
         results = framework.analyze(
             memory_dump_path=memory_dump,
             os_type=os,
-            plugins=list(plugins) if plugins else None,
+            plugins=plugin_list if plugin_list else None,
             output_file=output
         )
         
