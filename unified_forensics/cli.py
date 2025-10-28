@@ -2,9 +2,9 @@ import click
 import json
 import logging
 import sys
-import os
 from pathlib import Path
 from colorama import init, Fore, Style
+import os as os_module
 
 from .core.framework import UnifiedForensicsFramework
 
@@ -33,10 +33,9 @@ def analyze(memory_dump, os_type, output, plugins, output_format, metrics):
     """Analyze a memory dump file"""
     try:
         # Create output directories if they don't exist
-        import os
-        os.makedirs('analysis_results', exist_ok=True)
-        os.makedirs('performance_charts', exist_ok=True)
-        os.makedirs('logs', exist_ok=True)
+        os_module.makedirs('analysis_results', exist_ok=True)
+        os_module.makedirs('performance_charts', exist_ok=True)
+        os_module.makedirs('logs', exist_ok=True)
         
         framework = UnifiedForensicsFramework()
         
