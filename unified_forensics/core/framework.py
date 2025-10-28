@@ -6,6 +6,7 @@ from pathlib import Path
 
 from .os_detector import OSDetector
 from .output_standardizer import OutputStandardizer
+from .detection_metrics import DetectionMetricsCalculator
 from ..tools.volatility_wrapper import VolatilityWrapper
 from ..tools.rekall_wrapper import RekallWrapper
 from ..tools.memprocfs_wrapper import MemProcFSWrapper
@@ -14,6 +15,7 @@ class UnifiedForensicsFramework:
     def __init__(self):
         self.os_detector = OSDetector()
         self.output_standardizer = OutputStandardizer()
+        self.metrics_calculator = DetectionMetricsCalculator()
         self.tools = {
             'volatility': VolatilityWrapper(),
             'rekall': RekallWrapper(),
@@ -22,7 +24,8 @@ class UnifiedForensicsFramework:
         self.logger = logging.getLogger(__name__)
         
     def analyze(self, memory_dump_path: str, os_type: Optional[str] = None, 
-                plugins: Optional[List[str]] = None, output_file: Optional[str] = None) -> Dict[str, Any]:
+                plugins: Optional[List[str]] = None, output_file: Optional[str] = None,
+                enable_metrics: bool = False) -> Dict[str, Any]:
         
         if not os.path.exists(memory_dump_path):
             raise FileNotFoundError(f"Memory dump file not found: {memory_dump_path}")
@@ -34,12 +37,23 @@ class UnifiedForensicsFramework:
         tool = self._select_tool(os_type)
         self.logger.info(f"Selected tool: {tool}")
         
+        # Start metrics calculation if enabled
+        if enable_metrics:
+            self.metrics_calculator.start_analysis()
+        
         raw_results = self._run_analysis(memory_dump_path, tool, os_type)
         
         standardized_results = self.output_standardizer.standardize(raw_results, os_type)
         
         if plugins:
             standardized_results = self._run_plugins(standardized_results, plugins)
+        
+        # Add detection metrics if enabled
+        if enable_metrics:
+            self.metrics_calculator.end_analysis()
+            metrics = self.metrics_calculator.calculate_metrics()
+            standardized_results['detection_metrics'] = metrics.__dict__
+            standardized_results['detailed_metrics'] = self.metrics_calculator.get_detailed_metrics()
         
         if output_file:
             self._save_results(standardized_results, output_file)
@@ -112,3 +126,26 @@ class UnifiedForensicsFramework:
     def get_available_plugins(self) -> List[str]:
         plugins_dir = Path(__file__).parent.parent / 'plugins'
         return [f.stem for f in plugins_dir.glob('*.py') if f.stem != '__init__']
+    
+    def run_experimental_analysis(self, memory_dump_path: str, os_type: str, 
+                                 event_rates: List[int] = None) -> Dict[str, Any]:
+        """Run experimental analysis with detection metrics"""
+        from .experimental_framework import ExperimentalFramework
+        
+        experimental_framework = ExperimentalFramework()
+        return experimental_framework.run_detection_experiment(memory_dump_path, os_type, event_rates)
+    
+    def validate_cross_platform(self, test_dumps: Dict[str, str]) -> Dict[str, Any]:
+        """Validate cross-platform functionality"""
+        from .experimental_framework import ExperimentalFramework
+        
+        experimental_framework = ExperimentalFramework()
+        return experimental_framework.run_cross_platform_validation(test_dumps)
+    
+    def get_detection_metrics(self) -> Dict[str, Any]:
+        """Get current detection metrics"""
+        return self.metrics_calculator.get_detailed_metrics()
+    
+    def reset_metrics(self):
+        """Reset detection metrics"""
+        self.metrics_calculator.reset()
