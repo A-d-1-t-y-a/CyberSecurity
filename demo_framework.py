@@ -18,6 +18,7 @@ import platform
 import shutil
 from pathlib import Path
 from datetime import datetime
+import argparse
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -571,26 +572,133 @@ if __name__ == "__main__":
 
 def main():
     """Main function"""
+    parser = argparse.ArgumentParser(
+        description="Unified Memory Forensics Framework - Complete Demo Script",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Run complete demo with samples
+  python3 demo_framework.py
+  
+  # Analyze real memory dump
+  python3 demo_framework.py --real-dump /path/to/dump.mem --os-type linux
+  
+  # Skip sample generation, only analyze real dump
+  python3 demo_framework.py --real-dump /path/to/dump.mem --os-type windows --skip-samples
+  
+  # Fast mode with fewer experimental rates
+  python3 demo_framework.py --real-dump /path/to/dump.mem --os-type macos --fast
+        """
+    )
+    
+    parser.add_argument(
+        "--real-dump",
+        dest="real_dump",
+        type=str,
+        help="Path to a real memory dump file to analyze"
+    )
+    parser.add_argument(
+        "--os-type",
+        dest="real_os_type",
+        choices=["windows", "linux", "macos"],
+        help="Operating system type for the provided real memory dump"
+    )
+    parser.add_argument(
+        "--skip-samples",
+        dest="skip_samples",
+        action="store_true",
+        help="Skip generating and analyzing sample dumps (useful when only real dump is analyzed)"
+    )
+    parser.add_argument(
+        "--fast",
+        dest="fast_mode",
+        action="store_true",
+        help="Faster demo: fewer event rates and minimal charts"
+    )
+
+    args = parser.parse_args()
+
     demo = UnifiedForensicsDemo()
+
+    # Always setup environment first
+    if not demo.setup_environment():
+        print("ERROR: Environment setup failed")
+        sys.exit(1)
+
+    # Optional real dump analysis (works on all OS)
+    if args.real_dump:
+        if not args.real_os_type:
+            print("ERROR: --os-type is required when using --real-dump")
+            sys.exit(1)
+
+        print("\\n" + "="*80)
+        print(" ANALYZING REAL MEMORY DUMP")
+        print("="*80)
+        print(f"File: {args.real_dump}")
+        print(f"OS Type: {args.real_os_type}")
+
+        # Basic analysis with metrics
+        result = demo.run_command([
+            demo.python_executable, "-m", "unified_forensics", "analyze",
+            args.real_dump, "--os-type", args.real_os_type, "--format", "summary", "--metrics"
+        ], timeout=1800)
+        if not result or result.returncode != 0:
+            print("ERROR: Real dump analysis failed")
+            if result:
+                print(result.stderr)
+            sys.exit(1)
+        print("SUCCESS: Real dump analysis completed")
+
+        # Experimental analysis on real dump
+        rates = [1, 10] if args.fast_mode else [1, 10, 20]
+        cmd = [demo.python_executable, "-m", "unified_forensics", "experiment", args.real_dump, "--os-type", args.real_os_type]
+        for r in rates:
+            cmd += ["--rates", str(r)]
+        
+        print(f"Running experimental analysis with rates: {rates}")
+        result = demo.run_command(cmd, timeout=3600)
+        if not result or result.returncode != 0:
+            print("ERROR: Real dump experimental analysis failed")
+            if result:
+                print(result.stderr)
+            sys.exit(1)
+        print("SUCCESS: Real dump experimental analysis completed")
+
+    # Demo flow using generated samples (unless skipped)
+    if not args.skip_samples:
+        if not demo.generate_memory_samples():
+            print("ERROR: Memory sample generation failed")
+            sys.exit(1)
+
+        if not demo.run_basic_analysis():
+            print("ERROR: Basic analysis failed")
+            sys.exit(1)
+
+        experimental_results = demo.run_experimental_analysis()
+        if not any(experimental_results.values()):
+            print("ERROR: Experimental analysis failed")
+            sys.exit(1)
+
+        demo.generate_performance_charts()
+        demo.generate_demo_report()
+
+    print("\\n" + "="*80)
+    print(" ALL TASKS COMPLETED SUCCESSFULLY!")
+    print("="*80)
+    print("\\nCross-Platform Commands:")
+    print("  Windows: py demo_framework.py --real-dump <dump.mem> --os-type windows")
+    print("  Linux:   python3 demo_framework.py --real-dump <dump.mem> --os-type linux")
+    print("  macOS:   python3 demo_framework.py --real-dump <dump.mem> --os-type macos")
+    print("\\nSetup Scripts:")
+    print("  Windows: setup_windows.bat")
+    print("  Linux:   ./setup_linux.sh")
+    print("  macOS:   ./setup_macos.sh")
+    print("\\nTest Scripts:")
+    print("  Windows: test_windows.bat")
+    print("  Linux:   ./test_linux.sh")
+    print("  macOS:   ./test_macos.sh")
     
-    if len(sys.argv) > 1 and sys.argv[1] == "--help":
-        print("Unified Memory Forensics Framework - Complete Demo Script")
-        print("\\nUsage:")
-        print("  python demo_framework.py              # Run complete demo")
-        print("  python demo_framework.py --help       # Show this help")
-        print("\\nThis script will:")
-        print("  1. Setup Python virtual environment")
-        print("  2. Install all dependencies")
-        print("  3. Create necessary directories")
-        print("  4. Generate memory dump samples for all platforms")
-        print("  5. Run basic memory analysis")
-        print("  6. Run experimental analysis with detection metrics")
-        print("  7. Generate performance charts")
-        print("  8. Create comprehensive demo report")
-        return
-    
-    success = demo.run_complete_demo()
-    sys.exit(0 if success else 1)
+    sys.exit(0)
 
 if __name__ == "__main__":
     main()
