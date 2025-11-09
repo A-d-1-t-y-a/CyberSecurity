@@ -35,7 +35,6 @@ def analyze(memory_dump, os_type, output, plugins, output_format, metrics):
         # Create output directories if they don't exist
         os_module.makedirs('analysis_results', exist_ok=True)
         os_module.makedirs('performance_charts', exist_ok=True)
-        os_module.makedirs('logs', exist_ok=True)
         
         framework = UnifiedForensicsFramework()
         

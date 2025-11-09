@@ -66,67 +66,20 @@ if [ $? -ne 0 ]; then
 fi
 echo "SUCCESS: pip upgraded"
 
-# Install system dependencies for Linux
-echo ""
-echo "[6] Installing system dependencies..."
-LIBMAGIC_INSTALLED=false
-if command -v apt-get &> /dev/null; then
-    if sudo apt-get update -qq && sudo apt-get install -y libmagic1 2>/dev/null; then
-        LIBMAGIC_INSTALLED=true
-    else
-        echo "WARNING: Could not install libmagic1 automatically."
-        echo "         Please run manually: sudo apt-get install -y libmagic1"
-    fi
-elif command -v yum &> /dev/null; then
-    if sudo yum install -y file-libs 2>/dev/null; then
-        LIBMAGIC_INSTALLED=true
-    else
-        echo "WARNING: Could not install file-libs automatically."
-        echo "         Please run manually: sudo yum install -y file-libs"
-    fi
-elif command -v dnf &> /dev/null; then
-    if sudo dnf install -y file-libs 2>/dev/null; then
-        LIBMAGIC_INSTALLED=true
-    else
-        echo "WARNING: Could not install file-libs automatically."
-        echo "         Please run manually: sudo dnf install -y file-libs"
-    fi
-elif command -v pacman &> /dev/null; then
-    if sudo pacman -S --noconfirm file 2>/dev/null; then
-        LIBMAGIC_INSTALLED=true
-    else
-        echo "WARNING: Could not install file automatically."
-        echo "         Please run manually: sudo pacman -S file"
-    fi
-else
-    echo "WARNING: Could not detect package manager."
-    echo "         Please install libmagic manually for your distribution."
-fi
-
-if [ "$LIBMAGIC_INSTALLED" = true ]; then
-    echo "SUCCESS: System dependencies installed"
-else
-    echo "INFO: System dependencies check completed (may need manual installation)"
-fi
-
 # Install requirements
 echo ""
-echo "[7] Installing Python dependencies..."
+echo "[6] Installing Python dependencies..."
 pip install -r requirements.txt
 if [ $? -ne 0 ]; then
     echo "ERROR: Failed to install dependencies"
     exit 1
 fi
 
-# Install platform-specific packages
-echo ""
-echo "[8] Installing platform-specific packages..."
-pip install python-magic 2>/dev/null || echo "WARNING: python-magic installation failed (may need libmagic system library)"
 echo "SUCCESS: Dependencies installed"
 
 # Install the framework
 echo ""
-echo "[9] Installing framework..."
+echo "[7] Installing framework..."
 pip install -e .
 if [ $? -ne 0 ]; then
     echo "ERROR: Failed to install framework"
@@ -136,8 +89,8 @@ echo "SUCCESS: Framework installed"
 
 # Create necessary directories
 echo ""
-echo "[10] Creating project directories..."
-mkdir -p memory_dump_samples analysis_results performance_charts logs
+echo "[8] Creating project directories..."
+mkdir -p analysis_results performance_charts
 if [ $? -ne 0 ]; then
     echo "ERROR: Failed to create directories"
     exit 1
@@ -146,7 +99,7 @@ echo "SUCCESS: Directories created"
 
 # Test framework installation
 echo ""
-echo "[11] Testing framework installation..."
+echo "[9] Testing framework installation..."
 python3 -m unified_forensics info
 if [ $? -ne 0 ]; then
     echo "ERROR: Framework test failed"
@@ -155,7 +108,7 @@ fi
 echo "SUCCESS: Framework test passed"
 
 echo ""
-echo "[12] Making test scripts executable..."
+echo "[10] Making test scripts executable..."
 if [ -f "test_complete_malware.sh" ]; then
     chmod +x test_complete_malware.sh
     echo "SUCCESS: Test scripts are executable"
@@ -184,3 +137,4 @@ echo ""
 echo "To run experimental analysis:"
 echo "  python3 -m unified_forensics experiment <dump.mem> --os-type linux --rates 1 --rates 10"
 echo ""
+
