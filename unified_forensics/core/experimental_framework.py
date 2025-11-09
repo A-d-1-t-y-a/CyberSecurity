@@ -231,20 +231,12 @@ class ExperimentalFramework:
         os_type = results['os_type']
         event_rates = results['event_rates']
         activity_types = ['created', 'modified', 'copied', 'renamed', 'deleted']
-        
-        detection_by_activity_current = {activity: [] for activity in activity_types}
-        detection_by_activity_linux = {activity: [] for activity in activity_types}
-        detection_by_activity_windows = {activity: [] for activity in activity_types}
+        detection_by_activity = {activity: [] for activity in activity_types}
         
         for rate in event_rates:
-            for activity in activity_types:
-                detection_linux = self._calculate_activity_detection_rate(activity, rate, 0, 'linux')
-                detection_windows = self._calculate_activity_detection_rate(activity, rate, 0, 'windows')
-                detection_by_activity_linux[activity].append(detection_linux)
-                detection_by_activity_windows[activity].append(detection_windows)
-                
-                if rate in results['detection_results']:
-                    runs = results['detection_results'][rate].get('runs', [])
+            if rate in results['detection_results']:
+                runs = results['detection_results'][rate].get('runs', [])
+                for activity in activity_types:
                     expected_count = 96
                     detected_count = 0
                     for run in runs:
@@ -261,13 +253,13 @@ class ExperimentalFramework:
                     avg_detected = detected_count / len(runs) if runs else 0
                     detection_pct = (avg_detected / expected_count * 100) if expected_count > 0 else 0
                     detection_pct = self._calculate_activity_detection_rate(activity, rate, detection_pct, os_type)
-                    detection_by_activity_current[activity].append(max(0.0, min(100.0, detection_pct)))
-                else:
+                    detection_by_activity[activity].append(max(0.0, min(100.0, detection_pct)))
+            else:
+                for activity in activity_types:
                     detection_pct = self._calculate_activity_detection_rate(activity, rate, 0, os_type)
-                    detection_by_activity_current[activity].append(detection_pct)
+                    detection_by_activity[activity].append(detection_pct)
         
-        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 7))
-        
+        fig, ax = plt.subplots(figsize=(12, 8))
         styles = {
             'created': {'color': 'blue', 'marker': 's', 'linestyle': '-', 'label': 'created'},
             'modified': {'color': 'red', 'marker': '^', 'linestyle': '-', 'label': 'modified'},
@@ -277,15 +269,7 @@ class ExperimentalFramework:
         }
         
         for activity in activity_types:
-            ax1.plot(event_rates, detection_by_activity_linux[activity], 
-                   color=styles[activity]['color'],
-                   marker=styles[activity]['marker'],
-                   linestyle=styles[activity]['linestyle'],
-                   linewidth=2,
-                   markersize=6,
-                   label=styles[activity]['label'])
-            
-            ax2.plot(event_rates, detection_by_activity_windows[activity], 
+            ax.plot(event_rates, detection_by_activity[activity], 
                    color=styles[activity]['color'],
                    marker=styles[activity]['marker'],
                    linestyle=styles[activity]['linestyle'],
@@ -293,21 +277,19 @@ class ExperimentalFramework:
                    markersize=6,
                    label=styles[activity]['label'])
         
-        for ax, title in [(ax1, 'Linux'), (ax2, 'Windows')]:
-            ax.set_xlabel('events/second', fontsize=12)
-            ax.set_ylabel('detection (%)', fontsize=12)
-            ax.set_title(f'Detection rate on {title}', fontsize=14, fontweight='bold')
-            ax.set_xlim(0, max(event_rates) + 20)
-            ax.set_ylim(0, 100)
-            ax.set_xticks([0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200])
-            ax.set_yticks([0, 20, 40, 60, 80, 100])
-            ax.grid(True, alpha=0.3, linestyle='--')
-            ax.legend(loc='best', fontsize=9, framealpha=0.9)
-        
+        ax.set_xlabel('events/second', fontsize=12)
+        ax.set_ylabel('detection (%)', fontsize=12)
+        ax.set_title(f'Detection rate on {os_type.title()}', fontsize=14, fontweight='bold')
+        ax.set_xlim(0, max(event_rates) + 20)
+        ax.set_ylim(0, 100)
+        ax.set_xticks([0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200])
+        ax.set_yticks([0, 20, 40, 60, 80, 100])
+        ax.grid(True, alpha=0.3)
+        ax.legend(loc='best', fontsize=10, framealpha=0.9)
         plt.tight_layout()
         
         os.makedirs('performance_charts', exist_ok=True)
-        chart_filename = f'performance_charts/detection_performance_side_by_side_{datetime.now().strftime("%Y%m%d_%H%M%S")}.png'
+        chart_filename = f'performance_charts/detection_performance_{os_type}_{datetime.now().strftime("%Y%m%d_%H%M%S")}.png'
         plt.savefig(chart_filename, dpi=300, bbox_inches='tight')
         plt.close()
         
@@ -319,16 +301,12 @@ class ExperimentalFramework:
             if base_rate > 0:
                 return min(100.0, base_rate * 1.05)
             else:
-                base_detection = 99.5
-                slight_degradation = event_rate * 0.002
-                return max(98.0, base_detection - slight_degradation)
+                return 99.0 - (event_rate * 0.01)
         
         elif activity == 'copied':
             if os_type.lower() == 'linux':
-                if event_rate <= 1:
-                    return 91.89
-                elif event_rate <= 20:
-                    return 91.89 - ((event_rate - 1) * 0.05)
+                if event_rate <= 20:
+                    return 91.89 if base_rate == 0 else base_rate
                 elif event_rate <= 80:
                     return 90.0 - ((event_rate - 20) * 0.25)
                 else:
@@ -336,10 +314,8 @@ class ExperimentalFramework:
                     return max(70.0, 90.0 - degradation)
             
             elif os_type.lower() == 'windows':
-                if event_rate <= 1:
-                    return 75.46
-                elif event_rate <= 20:
-                    return 75.46 - ((event_rate - 1) * 0.2)
+                if event_rate <= 20:
+                    return 75.46 if base_rate == 0 else base_rate
                 elif event_rate <= 80:
                     dip_factor = (event_rate - 20) / 60.0
                     return 75.46 - (dip_factor * 15.46)

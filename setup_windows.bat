@@ -90,6 +90,9 @@ echo ===========================================================================
 echo SETUP COMPLETED SUCCESSFULLY!
 echo ================================================================================
 echo.
+echo To run the complete demo:
+echo   python demo_framework.py
+echo.
 echo To run individual commands:
 echo   py -m unified_forensics analyze memory_dump.mem
 echo   py -m unified_forensics experiment memory_dump.mem --os-type windows
