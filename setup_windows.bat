@@ -58,7 +58,16 @@ if %errorlevel% neq 0 (
 echo SUCCESS: Dependencies installed
 
 echo.
-echo [5] Installing framework...
+echo [5] Installing Windows-specific packages...
+pip install python-magic-bin>=0.4.14
+if %errorlevel% neq 0 (
+    echo WARNING: python-magic-bin installation failed (continuing...)
+) else (
+    echo SUCCESS: Windows-specific packages installed
+)
+
+echo.
+echo [6] Installing framework...
 pip install -e .
 if %errorlevel% neq 0 (
     echo ERROR: Failed to install framework
@@ -68,7 +77,7 @@ if %errorlevel% neq 0 (
 echo SUCCESS: Framework installed
 
 echo.
-echo [6] Creating directories...
+echo [7] Creating directories...
 if not exist memory_dump_samples mkdir memory_dump_samples
 if not exist analysis_results mkdir analysis_results
 if not exist performance_charts mkdir performance_charts
@@ -76,7 +85,7 @@ if not exist logs mkdir logs
 echo SUCCESS: Directories created
 
 echo.
-echo [7] Testing framework...
+echo [8] Testing framework...
 py -m unified_forensics info
 if %errorlevel% neq 0 (
     echo ERROR: Framework test failed

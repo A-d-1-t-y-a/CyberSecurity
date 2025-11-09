@@ -68,19 +68,34 @@ if [ $? -ne 0 ]; then
 fi
 echo "SUCCESS: pip upgraded"
 
+# Install system dependencies for macOS
+echo ""
+echo "[6] Installing system dependencies..."
+if command -v brew &> /dev/null; then
+    brew install libmagic 2>/dev/null || echo "WARNING: Could not install libmagic via Homebrew"
+else
+    echo "WARNING: Homebrew not found. Please install libmagic manually: brew install libmagic"
+fi
+echo "SUCCESS: System dependencies checked"
+
 # Install requirements
 echo ""
-echo "[6] Installing dependencies..."
+echo "[7] Installing Python dependencies..."
 pip install -r requirements.txt
 if [ $? -ne 0 ]; then
     echo "ERROR: Failed to install dependencies"
     exit 1
 fi
+
+# Install platform-specific packages
+echo ""
+echo "[8] Installing platform-specific packages..."
+pip install python-magic 2>/dev/null || echo "WARNING: python-magic installation failed (may need libmagic system library)"
 echo "SUCCESS: Dependencies installed"
 
 # Install the framework
 echo ""
-echo "[7] Installing framework..."
+echo "[9] Installing framework..."
 pip install -e .
 if [ $? -ne 0 ]; then
     echo "ERROR: Failed to install framework"
@@ -90,7 +105,7 @@ echo "SUCCESS: Framework installed"
 
 # Create necessary directories
 echo ""
-echo "[8] Creating project directories..."
+echo "[10] Creating project directories..."
 mkdir -p memory_dump_samples analysis_results performance_charts logs
 if [ $? -ne 0 ]; then
     echo "ERROR: Failed to create directories"
@@ -100,7 +115,7 @@ echo "SUCCESS: Directories created"
 
 # Test framework installation
 echo ""
-echo "[9] Testing framework installation..."
+echo "[11] Testing framework installation..."
 python3 -m unified_forensics info
 if [ $? -ne 0 ]; then
     echo "ERROR: Framework test failed"
@@ -109,7 +124,7 @@ fi
 echo "SUCCESS: Framework test passed"
 
 echo ""
-echo "[10] Making test scripts executable..."
+echo "[12] Making test scripts executable..."
 if [ -f "test_complete_malware_macos.sh" ]; then
     chmod +x test_complete_malware_macos.sh
     echo "SUCCESS: Test scripts are executable"
