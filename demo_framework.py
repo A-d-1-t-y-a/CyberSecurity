@@ -1,14 +1,4 @@
 #!/usr/bin/env python3
-"""
-Unified Memory Forensics Framework - Complete Demo Script
-Author: Manoj Santhoju
-Institution: National College of Ireland
-Program: MSc Cybersecurity
-
-This script provides a complete demonstration of the Unified Memory Forensics Framework
-including installation, setup, memory dump generation, analysis, and experimental validation.
-"""
-
 import os
 import sys
 import json
@@ -35,25 +25,21 @@ class UnifiedForensicsDemo:
         ]
         
     def _get_python_executable(self):
-        """Get the correct Python executable based on OS"""
         if platform.system() == "Windows":
             return "py"
         else:
             return "python3"
     
     def print_header(self, title):
-        """Print a formatted header"""
         print("\n" + "="*80)
         print(f" {title}")
         print("="*80)
     
     def print_step(self, step, description):
-        """Print a step with status"""
         print(f"\n[{step}] {description}")
         print("-" * 60)
     
     def run_command(self, command, timeout=300, capture_output=True):
-        """Run a command and return the result"""
         try:
             if isinstance(command, str):
                 command = command.split()
@@ -74,10 +60,7 @@ class UnifiedForensicsDemo:
             return None
     
     def setup_environment(self):
-        """Setup the complete environment"""
         self.print_header("SETTING UP UNIFIED MEMORY FORENSICS FRAMEWORK")
-        
-        # Step 1: Create virtual environment
         self.print_step("1", "Creating Python virtual environment")
         if not self.venv_path.exists():
             result = self.run_command([self.python_executable, "-m", "venv", "venv"])
