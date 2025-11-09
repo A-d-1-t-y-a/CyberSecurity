@@ -107,6 +107,15 @@ fi
 echo "SUCCESS: Framework test passed"
 
 echo ""
+echo "[10] Making test scripts executable..."
+if [ -f "test_complete_malware.sh" ]; then
+    chmod +x test_complete_malware.sh
+    echo "SUCCESS: Test scripts are executable"
+else
+    echo "WARNING: test_complete_malware.sh not found"
+fi
+
+echo ""
 echo "=========================================="
 echo "SETUP COMPLETED SUCCESSFULLY!"
 echo "=========================================="
@@ -114,10 +123,11 @@ echo ""
 echo "To activate the environment in future sessions:"
 echo "  source venv/bin/activate"
 echo ""
-echo "To run the complete demo:"
-echo "  python3 test_malware_simulation.py"
+echo "To run malware testing:"
+echo "  ./test_complete_malware.sh"
 echo ""
-echo "To run quick tests:"
+echo "To run individual commands:"
+echo "  python3 -m unified_forensics analyze memory_dump.mem --os-type linux"
 echo "  python3 -m unified_forensics experiment memory_dump.mem --os-type linux"
 echo ""
 echo "To analyze a real memory dump:"
