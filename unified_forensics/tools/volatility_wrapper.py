@@ -74,7 +74,8 @@ class VolatilityWrapper:
                 else:
                     cmd = [self.volatility_cmd, '-f', memory_dump_path, 'mac.pslist', '--output', 'json']
             
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=60, shell=True)
+            timeout_value = 180 if os_type.lower() == 'linux' else 120
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout_value, shell=True)
             
             if result.returncode == 0:
                 return json.loads(result.stdout)
@@ -103,7 +104,8 @@ class VolatilityWrapper:
                 else:
                     cmd = [self.volatility_cmd, '-f', memory_dump_path, 'mac.netstat', '--output', 'json']
             
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=60, shell=True)
+            timeout_value = 180 if os_type.lower() == 'linux' else 120
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout_value, shell=True)
             
             if result.returncode == 0:
                 return json.loads(result.stdout)
@@ -132,7 +134,8 @@ class VolatilityWrapper:
                 else:
                     cmd = [self.volatility_cmd, '-f', memory_dump_path, 'mac.lsmod', '--output', 'json']
             
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=60, shell=True)
+            timeout_value = 180 if os_type.lower() == 'linux' else 120
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout_value, shell=True)
             
             if result.returncode == 0:
                 return json.loads(result.stdout)
@@ -161,7 +164,8 @@ class VolatilityWrapper:
                 else:
                     cmd = [self.volatility_cmd, '-f', memory_dump_path, 'mac.proc', '--output', 'json']
             
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=60, shell=True)
+            timeout_value = 180 if os_type.lower() == 'linux' else 120
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout_value, shell=True)
             
             if result.returncode == 0:
                 return json.loads(result.stdout)
@@ -192,7 +196,8 @@ class VolatilityWrapper:
                 else:
                     cmd = [self.volatility_cmd, '-f', memory_dump_path, 'mac.malfind', '--output', 'json']
             
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=60, shell=True)
+            timeout_value = 180 if os_type.lower() == 'linux' else 120
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout_value, shell=True)
             
             if result.returncode == 0:
                 artifacts.extend(json.loads(result.stdout))
