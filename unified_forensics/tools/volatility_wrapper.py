@@ -2,6 +2,7 @@ import subprocess
 import json
 import logging
 import os
+import platform
 from typing import Dict, Any, List
 from subprocess import TimeoutExpired
 
@@ -9,6 +10,7 @@ class VolatilityWrapper:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.volatility_cmd = self._find_volatility_cmd()
+        self.use_shell = platform.system() == 'Windows'
     
     def _find_volatility_cmd(self) -> str:
         possible_paths = [
@@ -18,14 +20,15 @@ class VolatilityWrapper:
             'python -m volatility3'
         ]
         
+        use_shell = platform.system() == 'Windows'
         for cmd in possible_paths:
             try:
                 if 'python -m' in cmd:
                     result = subprocess.run(['python', '-m', 'volatility3', '--help'], 
-                                          capture_output=True, text=True, timeout=10, shell=True)
+                                          capture_output=True, text=True, timeout=10, shell=use_shell)
                 else:
                     result = subprocess.run([cmd, '--help'], 
-                                          capture_output=True, text=True, timeout=10, shell=True)
+                                          capture_output=True, text=True, timeout=10, shell=use_shell)
                 
                 if result.returncode == 0:
                     return cmd
@@ -77,7 +80,7 @@ class VolatilityWrapper:
             
             timeout_value = 600 if os_type.lower() == 'linux' else 300
             try:
-                result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout_value, shell=True)
+                result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout_value, shell=self.use_shell)
                 
                 if result.returncode == 0:
                     return json.loads(result.stdout)
@@ -111,7 +114,7 @@ class VolatilityWrapper:
             
             timeout_value = 600 if os_type.lower() == 'linux' else 300
             try:
-                result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout_value, shell=True)
+                result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout_value, shell=self.use_shell)
                 
                 if result.returncode == 0:
                     return json.loads(result.stdout)
@@ -145,7 +148,7 @@ class VolatilityWrapper:
             
             timeout_value = 600 if os_type.lower() == 'linux' else 300
             try:
-                result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout_value, shell=True)
+                result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout_value, shell=self.use_shell)
                 
                 if result.returncode == 0:
                     return json.loads(result.stdout)
@@ -179,7 +182,7 @@ class VolatilityWrapper:
             
             timeout_value = 600 if os_type.lower() == 'linux' else 300
             try:
-                result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout_value, shell=True)
+                result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout_value, shell=self.use_shell)
                 
                 if result.returncode == 0:
                     return json.loads(result.stdout)
@@ -215,7 +218,7 @@ class VolatilityWrapper:
             
             timeout_value = 600 if os_type.lower() == 'linux' else 300
             try:
-                result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout_value, shell=True)
+                result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout_value, shell=self.use_shell)
                 
                 if result.returncode == 0:
                     artifacts.extend(json.loads(result.stdout))

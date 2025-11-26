@@ -2,6 +2,7 @@ import subprocess
 import json
 import logging
 import os
+import platform
 from typing import Dict, Any, List
 
 class MemProcFSWrapper:
@@ -29,8 +30,9 @@ class MemProcFSWrapper:
     
     def _check_availability(self) -> bool:
         try:
+            use_shell = platform.system() == 'Windows'
             result = subprocess.run([self.memprocfs_cmd, '--help'], 
-                                  capture_output=True, text=True, timeout=5, shell=True)
+                                  capture_output=True, text=True, timeout=5, shell=use_shell)
             return result.returncode == 0
         except:
             return False
