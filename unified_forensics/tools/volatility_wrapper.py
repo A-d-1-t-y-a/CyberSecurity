@@ -3,6 +3,7 @@ import json
 import logging
 import os
 from typing import Dict, Any, List
+from subprocess import TimeoutExpired
 
 class VolatilityWrapper:
     def __init__(self):
@@ -74,13 +75,17 @@ class VolatilityWrapper:
                 else:
                     cmd = [self.volatility_cmd, '-f', memory_dump_path, 'mac.pslist', '--output', 'json']
             
-            timeout_value = 180 if os_type.lower() == 'linux' else 120
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout_value, shell=True)
-            
-            if result.returncode == 0:
-                return json.loads(result.stdout)
-            else:
-                return self._parse_text_output(result.stdout, 'processes')
+            timeout_value = 600 if os_type.lower() == 'linux' else 300
+            try:
+                result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout_value, shell=True)
+                
+                if result.returncode == 0:
+                    return json.loads(result.stdout)
+                else:
+                    return self._parse_text_output(result.stdout, 'processes')
+            except TimeoutExpired:
+                self.logger.warning(f"Process extraction timed out after {timeout_value} seconds. This may occur with large memory dumps. Continuing with empty results...")
+                return []
                 
         except Exception as e:
             self.logger.warning(f"Process extraction failed: {str(e)}")
@@ -104,13 +109,17 @@ class VolatilityWrapper:
                 else:
                     cmd = [self.volatility_cmd, '-f', memory_dump_path, 'mac.netstat', '--output', 'json']
             
-            timeout_value = 180 if os_type.lower() == 'linux' else 120
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout_value, shell=True)
-            
-            if result.returncode == 0:
-                return json.loads(result.stdout)
-            else:
-                return self._parse_text_output(result.stdout, 'network')
+            timeout_value = 600 if os_type.lower() == 'linux' else 300
+            try:
+                result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout_value, shell=True)
+                
+                if result.returncode == 0:
+                    return json.loads(result.stdout)
+                else:
+                    return self._parse_text_output(result.stdout, 'network')
+            except TimeoutExpired:
+                self.logger.warning(f"Network extraction timed out after {timeout_value} seconds. This may occur with large memory dumps. Continuing with empty results...")
+                return []
                 
         except Exception as e:
             self.logger.warning(f"Network extraction failed: {str(e)}")
@@ -134,13 +143,17 @@ class VolatilityWrapper:
                 else:
                     cmd = [self.volatility_cmd, '-f', memory_dump_path, 'mac.lsmod', '--output', 'json']
             
-            timeout_value = 180 if os_type.lower() == 'linux' else 120
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout_value, shell=True)
-            
-            if result.returncode == 0:
-                return json.loads(result.stdout)
-            else:
-                return self._parse_text_output(result.stdout, 'modules')
+            timeout_value = 600 if os_type.lower() == 'linux' else 300
+            try:
+                result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout_value, shell=True)
+                
+                if result.returncode == 0:
+                    return json.loads(result.stdout)
+                else:
+                    return self._parse_text_output(result.stdout, 'modules')
+            except TimeoutExpired:
+                self.logger.warning(f"Module extraction timed out after {timeout_value} seconds. This may occur with large memory dumps. Continuing with empty results...")
+                return []
                 
         except Exception as e:
             self.logger.warning(f"Module extraction failed: {str(e)}")
@@ -164,13 +177,17 @@ class VolatilityWrapper:
                 else:
                     cmd = [self.volatility_cmd, '-f', memory_dump_path, 'mac.proc', '--output', 'json']
             
-            timeout_value = 180 if os_type.lower() == 'linux' else 120
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout_value, shell=True)
-            
-            if result.returncode == 0:
-                return json.loads(result.stdout)
-            else:
-                return self._parse_text_output(result.stdout, 'memory_regions')
+            timeout_value = 600 if os_type.lower() == 'linux' else 300
+            try:
+                result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout_value, shell=True)
+                
+                if result.returncode == 0:
+                    return json.loads(result.stdout)
+                else:
+                    return self._parse_text_output(result.stdout, 'memory_regions')
+            except TimeoutExpired:
+                self.logger.warning(f"Memory region extraction timed out after {timeout_value} seconds. This may occur with large memory dumps. Continuing with empty results...")
+                return []
                 
         except Exception as e:
             self.logger.warning(f"Memory region extraction failed: {str(e)}")
@@ -196,13 +213,16 @@ class VolatilityWrapper:
                 else:
                     cmd = [self.volatility_cmd, '-f', memory_dump_path, 'mac.malfind', '--output', 'json']
             
-            timeout_value = 180 if os_type.lower() == 'linux' else 120
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout_value, shell=True)
-            
-            if result.returncode == 0:
-                artifacts.extend(json.loads(result.stdout))
-            else:
-                artifacts.extend(self._parse_text_output(result.stdout, 'artifacts'))
+            timeout_value = 600 if os_type.lower() == 'linux' else 300
+            try:
+                result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout_value, shell=True)
+                
+                if result.returncode == 0:
+                    artifacts.extend(json.loads(result.stdout))
+                else:
+                    artifacts.extend(self._parse_text_output(result.stdout, 'artifacts'))
+            except TimeoutExpired:
+                self.logger.warning(f"Artifact extraction timed out after {timeout_value} seconds. This may occur with large memory dumps. Continuing with empty results...")
                 
         except Exception as e:
             self.logger.warning(f"Artifact extraction failed: {str(e)}")
