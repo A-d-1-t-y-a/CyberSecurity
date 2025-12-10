@@ -1,0 +1,75 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\geometry{left=20mm, top=20mm}
+
+\title{Viva Command Reference Cheat Sheet}
+\author{Manoj Santhoju}
+\date{Examination Reference}
+
+\begin{document}
+
+\maketitle
+
+\section*{1. Setup Scripts (Run once)}
+\textbf{Windows:}
+\begin{verbatim}
+setup_windows.bat
+\end{verbatim}
+
+\textbf{Linux (Ubuntu/Debian):}
+\begin{verbatim}
+chmod +x setup_linux.sh
+./setup_linux.sh
+\end{verbatim}
+
+\textbf{macOS:}
+\begin{verbatim}
+chmod +x setup_macos.sh
+./setup_macos.sh
+\end{verbatim}
+
+\section*{2. Automated Testing (The "One-Click" Demo)}
+\textit{Use these to demonstrate the entire workflow to the professor.}
+\textbf{Windows:}
+\begin{verbatim}
+test_complete_malware.bat
+\end{verbatim}
+
+\textbf{Linux:}
+\begin{verbatim}
+./test_complete_malware.sh
+\end{verbatim}
+
+\textbf{macOS:}
+\begin{verbatim}
+./test_complete_malware_macos.sh
+\end{verbatim}
+
+\section*{3. Manual Analysis Commands}
+\textit{Use these if asked to run a specific analysis manually.}
+
+\textbf{Basic Analysis (Auto-detect OS):}
+\begin{verbatim}
+unified-forensics analyze evidence.mem
+\end{verbatim}
+
+\textbf{Force OS and enable Malware Plugin:}
+\begin{verbatim}
+unified-forensics analyze evidence.mem --os-type windows --plugins malware
+\end{verbatim}
+
+\textbf{Save Output to JSON:}
+\begin{verbatim}
+unified-forensics analyze evidence.mem --output report.json
+\end{verbatim}
+
+\textbf{Run Research Experiment (Metrics):}
+\begin{verbatim}
+unified-forensics experiment evidence.mem --os-type linux --runs 5
+\end{verbatim}
+
+\end{document}

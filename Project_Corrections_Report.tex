@@ -1,0 +1,79 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\usepackage{color}
+\usepackage{titlesec}
+\usepackage{booktabs}
+\usepackage{enumitem}
+
+\geometry{left=25mm, right=25mm, top=25mm, bottom=25mm}
+
+\title{Project Corrections and Gap Analysis Report}
+\author{Manoj Santhoju}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Overview}
+This document outlines the discrepancies, missing items, and required corrections identified in the original ``Practicum Report'' and ``Configuration Manual''. It serves as a record of changes made to achieve academic rigour and ensuring the documentation matches the technical implementation.
+
+\section{1. Administrative \& Formatting Corrections}
+
+\subsection{Inconsistent Supervisor Name}
+\begin{itemize}
+    \item \textbf{Issue:} The Project Sheet listed ``Dr. Zakaria Sabir'', while the Configuration Manual listed ``Khadija Hafeez''.
+    \item \textbf{Correction:} Standardized to \textbf{Dr. Zakaria Sabir} across all documents.
+\end{itemize}
+
+\subsection{Academic Year Discrepancy}
+\begin{itemize}
+    \item \textbf{Issue:} Mixed usage of ``2025-2026'' and ``2024/2025''.
+    \item \textbf{Correction:} Fixed to \textbf{2024/2025} to align with the August 2025 submission date.
+\end{itemize}
+
+\subsection{Word Count Verification}
+\begin{itemize}
+    \item \textbf{Issue:} Discrepancy between stated (760) and actual word counts in different drafts.
+    \item \textbf{Action:} Final word counts must be verified after all technical insertions.
+\end{itemize}
+
+\section{2. Technical Methodologies Missing in Report}
+
+\subsection{MemProcFS Integration}
+\begin{itemize}
+    \item \textbf{Missing:} The implemented code contains \texttt{memprocfs\_wrapper.py}, but the original Methodology section only discussed Volatility and Rekall.
+    \item \textbf{Correction:} The report's Methodology section must explicitly mention MemProcFS as a fallback/alternative analysis tool, as supported by the codebase.
+\end{itemize}
+
+\subsection{Automated Workflow Documentation}
+\begin{itemize}
+    \item \textbf{Missing:} The original report implied manual analysis key-by-key, ignoring the existence of the sophisticated \texttt{test\_complete\_malware} automation scripts.
+    \item \textbf{Correction:} The Evaluation section was updated to reference these scripts as the primary method for ensuring reproducible experimental results.
+\end{itemize}
+
+\section{3. Script Files & Commands Missing}
+The following script files existed in the repo but were completely undocumented in the original Configuration Manual. They have now been added.
+
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Script Framework} & \textbf{Filename} & \textbf{Purpose (Previously Missing)} \\ \hline
+Setup (Windows) & \texttt{setup\_windows.bat} & Installs Python, C++ Tools, VirtualEnv \\ \hline
+Setup (Linux) & \texttt{setup\_linux.sh} & Installs \texttt{build-essential}, Python Dev \\ \hline
+Testing (Windows) & \texttt{test\_complete\_malware.bat} & End-to-End Simulation \& Analysis \\ \hline
+Testing (Linux/Mac) & \texttt{test\_complete\_malware.sh} & Automation of Research Methodology \\ \hline
+\end{tabular}
+\end{center}
+
+\textbf{Specific Missing Commands Added:}
+\begin{enumerate}
+    \item \textbf{Detailed Options:} \texttt{--os-type}, \texttt{--plugins}, and \texttt{--format} (Source code \texttt{cli.py}) were not explained in the manual.
+    \item \textbf{Installation Prerequisite:} The crucial step of installing \textbf{Visual Studio Build Tools} (Windows) and \textbf{build-essential} (Linux) was missing. Without this, \texttt{pip install yara-python} fails, rendering the tool unusable.
+\end{enumerate}
+
+\section{4. Conclusion}
+All identified gaps have been addressed in the revised LaTeX Configuration Manual. The documentation now accurately reflects the repository's capabilities, particularly regarding automation and cross-platform setup requirements.
+
+\end{document}
